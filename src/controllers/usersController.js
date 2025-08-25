@@ -6,7 +6,7 @@ import { Pool } from "pg";
 export const getUsers = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, username, created_at FROM users"
+      "SELECT id, username, role, created_at FROM users"
     );
     res.json(result.rows);
   } catch (error) {
@@ -24,7 +24,7 @@ export const createUsers = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username, created_at",
+      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username,role, created_at",
       [username, hashedPassword]
     );
     res.status(201).json(result.rows[0]);
