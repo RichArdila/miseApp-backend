@@ -10,59 +10,63 @@ const createTables = async () => {
         id SERIAL PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)        
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )        
     `);
     console.log('Table "users" created sucessfully');
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS items (
-      id SERIAL PRIMARY KEY, 
-      name VARCHAR(150) UNIQUE NOT NULL),
-      type VARCHAR(20) CHECK (type IN ('Food', 'Tools')) NOT NULL,
-      rotation_days INT,  -- only for food items
-      imagen_URL TEXT
+        CREATE TABLE IF NOT EXISTS items (
+        id SERIAL PRIMARY KEY, 
+        name VARCHAR(150) UNIQUE NOT NULL,
+        type VARCHAR(20) CHECK (type IN ('Food', 'Tools')) NOT NULL,
+        rotation_days INT,  -- only for food items
+        imagen_URL TEXT
+        )
       `);
     console.log('table "items" created sucessfully');
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS stations_items (
-      id SERIAL PRIMARY KEY,
-      station VARCHAR(50) NOT NULL,
-      subcategory VARCHAR(20) NOT NULL, -- Ej: Food or Tools
-      location VARCHAR(50) NOT NULL,
-      item_id INT REFERENCES items(id) ON DELETE CASCADE,
-      quantity INT DEFAULT 0,
-      UNIQUE (station, subcategory, location, item_id) -- Ensure each combination is unique
-      )
+        CREATE TABLE IF NOT EXISTS stations_items (
+        id SERIAL PRIMARY KEY,
+        station VARCHAR(50) NOT NULL,
+        subcategory VARCHAR(20) NOT NULL, -- Ej: Food or Tools
+        location VARCHAR(50) NOT NULL,
+        item_id INT REFERENCES items(id) ON DELETE CASCADE,
+        quantity INT DEFAULT 0,
+        UNIQUE (station, subcategory, location, item_id) -- Ensure each combination is unique
+        )
       `);
     console.log('table "stations_items" created sucessfully');
 
     // Checklist table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS checklists (
-      id SERIAL PRIMARY KEY,
-      station VARCHAR(50) NOT NULL,
-      user_id INT REFERENCES users(id) ON DELETE SET NULL,
-      status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('activo', 'finished')),
-      started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      finished_at TIMESTAMP,
-      finished_by INT REFERENCES users(id) ON DELETE SET NULL
+        CREATE TABLE IF NOT EXISTS checklists (
+        id SERIAL PRIMARY KEY,
+        station VARCHAR(50) NOT NULL,
+        user_id INT REFERENCES users(id) ON DELETE SET NULL,
+        status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('activo', 'finished')),
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        finished_at TIMESTAMP,
+        finished_by INT REFERENCES users(id) ON DELETE SET NULL
+        )
       `);
     console.log('table "checklists" created sucessfully');
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS checklist_items (
-      id SERIAL PRIMARY KEY,
-      checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
-      station_item_id INT REFERENCES station_items(id) ON DELETE CASCADE,
-      status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'verified')),
-      verified_at TIMESTAMP,
-      verified_by INT REFERENCES users(id) ON DELETE SET NULL
+        CREATE TABLE IF NOT EXISTS checklist_items (
+        id SERIAL PRIMARY KEY,
+        checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
+        station_item_id INT REFERENCES station_items(id) ON DELETE CASCADE,
+        status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'verified')),
+        verified_at TIMESTAMP,
+        verified_by INT REFERENCES users(id) ON DELETE SET NULL
+        )
       `);
     console.log('table "checklist_items" created sucessfully');
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS created_history (
+      CREATE TABLE IF NOT EXISTS checklist_history (
       id SERIAL PRIMARY KEY,
       checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
       finished_at TIMESTAMP,
