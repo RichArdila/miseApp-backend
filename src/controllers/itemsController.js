@@ -13,3 +13,12 @@ export const createItem = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getItems = async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT * from items ORDER BY id `);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

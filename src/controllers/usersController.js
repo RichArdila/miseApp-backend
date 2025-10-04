@@ -4,10 +4,10 @@ import { capitalizeWords } from "../utils/format.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const result = await pool.query(
+    const { rows } = await pool.query(
       "SELECT id, username, role, created_at FROM users"
     );
-    res.json(result.rows);
+    res.json(rows);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Error getting users" });

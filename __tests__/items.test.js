@@ -1,15 +1,21 @@
 import request from "supertest";
 import app from "../index.js";
 
-let token;
+let tokenAdmin;
+let tokenUser;
 
 beforeAll(async () => {
-  const res = await request(app).post("/auth/login").send({
+  const adminRes = await request(app).post("/auth/login").send({
     username: "Richard Ardila",
     password: "0526",
   });
+  tokenAdmin = adminRes.body.token;
 
-  token = res.body.token;
+  const userRes = await request(app).post("/auth/login").send({
+    username: "Alexis Lopez",
+    password: "1111",
+  });
+  tokenUser = userRes.body.token;
 });
 
 describe("POST /items", () => {
@@ -17,7 +23,7 @@ describe("POST /items", () => {
     const timestamp = Date.now();
     const res = await request(app)
       .post("/items")
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${tokenAdmin}`)
       .send({
         name: `celery-${timestamp}`,
         type: "Food",
@@ -28,5 +34,22 @@ describe("POST /items", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("id");
     expect(res.body.name).toBe(`celery-${timestamp}`);
+  });
+});
+
+describe("GET /items", () => {
+  it("should return the items if user is authenticated", async () => {
+    const res = await request(app)
+      .get("/items")
+      .set("Authorization", `Bearer ${tokenUser}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+  it("should fail if I don't send a token ", async () => {
+    const res = await request(app).get("/items");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Require Token");
   });
 });
