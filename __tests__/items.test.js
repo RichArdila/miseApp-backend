@@ -25,7 +25,7 @@ describe("POST /items", () => {
       .post("/items")
       .set("Authorization", `Bearer ${tokenAdmin}`)
       .send({
-        name: `celery-${timestamp}`,
+        name: `Celery-${timestamp}`,
         type: "Food",
         rotation_days: 3,
         image_URL:
@@ -33,7 +33,7 @@ describe("POST /items", () => {
       });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("id");
-    expect(res.body.name).toBe(`celery-${timestamp}`);
+    expect(res.body.name).toBe(`Celery-${timestamp}`);
   });
 });
 

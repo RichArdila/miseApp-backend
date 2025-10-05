@@ -37,7 +37,7 @@ export const updateUser = async (req, res) => {
     const { id } = req.params;
     const { username, password, role } = req.body;
 
-    console.log("Parametros recibidos:", { id, username, password, role }); // 👈 Log de depuración
+    console.log("received parameters:", { id, username, password, role }); //Log de depuración
 
     let updateFields = [];
     let values = [];
@@ -68,8 +68,8 @@ export const updateUser = async (req, res) => {
       values.length
     } RETURNING id, username, role, created_at`;
 
-    console.log("Query generada:", query); // 👈 Log de depuración
-    console.log("Valores:", values); // 👈 Log de depuración
+    console.log("Query generated:", query); // Log de depuración
+    console.log("Values:", values); // Log de depuración
 
     const result = await pool.query(query, values);
     res.json(result.rows[0]);
