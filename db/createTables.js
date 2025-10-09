@@ -21,7 +21,7 @@ const createTables = async () => {
         name VARCHAR(150) UNIQUE NOT NULL,
         type VARCHAR(20) CHECK (type IN ('Food', 'Tools')) NOT NULL,
         rotation_days INT,  -- only for food items
-        imagen_URL TEXT
+        image_URL TEXT
         )
       `);
     console.log('table "items" created sucessfully');
