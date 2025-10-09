@@ -72,3 +72,16 @@ export const updateItems = async (req, res) => {
     return res.status(500).json({ error: "Error updating item" });
   }
 };
+
+export const deleteItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(`DELETE FROM items WHERE id = $1`, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+    return res.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

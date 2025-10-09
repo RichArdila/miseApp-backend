@@ -54,23 +54,71 @@ describe("GET /items", () => {
   });
 });
 
-describe("update item", () => {
+describe("UPDATE /items", () => {
   it("should update an item if user is admin", async () => {
     const res = await request(app)
-      .put("/items/1")
+      .patch("/items/2")
       .set("Authorization", `Bearer ${tokenAdmin}`)
       .send({ name: "Updated Item" });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.name).toBe("Updated Item");
   });
   it("should fail if user is not admin", async () => {
     const res = await request(app)
-      .put("/items/1")
+      .patch("/items/1")
       .set("Authorization", `Bearer ${tokenUser}`)
       .send({ name: "Updated Item" });
+
+    expect(res.statusCode).toBe(403);
   });
   it("should fail if item not found", async () => {
     const res = await request(app)
-      .put("/items/999")
+      .patch("/items/999")
       .set("Authorization", `Bearer ${tokenAdmin}`)
       .send({ name: "Updated Item" });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe("Item not found");
+  });
+});
+
+describe("DELETE /items", () => {
+  it("should delete an item if user is admin", async () => {
+    // First create an item
+    const createRes = await request(app)
+      .post("/items")
+      .set("Authorization", `Bearer ${tokenAdmin}`)
+      .send({
+        name: "Temporal Item",
+        type: "Food",
+        rotation_days: 1,
+      });
+
+    expect(createRes.statusCode).toBe(200);
+    const itemId = createRes.body.id;
+
+    // Then delete it
+    const res = await request(app)
+      .delete(`/items/${itemId}`)
+      .set("Authorization", `Bearer ${tokenAdmin}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("Item deleted successfully");
+  });
+  it("should fail if user is not admin", async () => {
+    const res = await request(app)
+      .delete("/items/1")
+      .set("Authorization", `Bearer ${tokenUser}`);
+
+    expect(res.statusCode).toBe(403);
+  });
+  it("should fail if item not found", async () => {
+    const res = await request(app)
+      .delete("/items/917")
+      .set("Authorization", `Bearer ${tokenAdmin}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe("Item not found");
   });
 });
