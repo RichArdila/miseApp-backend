@@ -53,3 +53,24 @@ describe("GET /items", () => {
     expect(res.body.message).toBe("Require Token");
   });
 });
+
+describe("update item", () => {
+  it("should update an item if user is admin", async () => {
+    const res = await request(app)
+      .put("/items/1")
+      .set("Authorization", `Bearer ${tokenAdmin}`)
+      .send({ name: "Updated Item" });
+  });
+  it("should fail if user is not admin", async () => {
+    const res = await request(app)
+      .put("/items/1")
+      .set("Authorization", `Bearer ${tokenUser}`)
+      .send({ name: "Updated Item" });
+  });
+  it("should fail if item not found", async () => {
+    const res = await request(app)
+      .put("/items/999")
+      .set("Authorization", `Bearer ${tokenAdmin}`)
+      .send({ name: "Updated Item" });
+  });
+});
