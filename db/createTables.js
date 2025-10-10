@@ -26,6 +26,31 @@ const createTables = async () => {
       `);
     console.log('table "items" created sucessfully');
 
+    // Stations table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS stations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) UNIQUE NOT NULL,
+        description TEXT
+      );
+    `);
+    console.log('Table "stations" created successfully');
+
+    //initialize stations
+    await pool.query(`
+      INSERT INTO stations (name, description) VALUES
+      ('ASS1', 'Assembly Station 1'),
+      ('ASS2', 'Assembly Station 2'),
+      ('GRILL', 'Grill Station'),
+      ('FRYERS', 'Fryer Station'),
+      ('SALADE', 'Salade Station'),
+      ('SANDWICH', 'Sandwich Station'),
+      ('PIZZA', 'Pizza Station')
+      ON CONFLICT (name) DO NOTHING;
+    `);
+    console.log("Stations initialized successfully");
+
+    // Station items table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS stations_items (
         id SERIAL PRIMARY KEY,
