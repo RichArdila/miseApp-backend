@@ -54,12 +54,11 @@ const createTables = async () => {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS stations_items (
         id SERIAL PRIMARY KEY,
-        station VARCHAR(50) NOT NULL,
-        subcategory VARCHAR(20) NOT NULL, -- Ej: Food or Tools
+        station_id INT REFERENCES stations(id) ON DELETE CASCADE,
         location VARCHAR(50) NOT NULL,
         item_id INT REFERENCES items(id) ON DELETE CASCADE,
         quantity INT DEFAULT 0,
-        UNIQUE (station, subcategory, location, item_id) -- Ensure each combination is unique
+        UNIQUE (station_id, location, item_id) -- Ensure each combination is unique
         )
       `);
     console.log('table "stations_items" created sucessfully');

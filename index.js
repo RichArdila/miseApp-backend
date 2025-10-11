@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import usersRouter from "./src/routes/users.js";
 import authRouter from "./src/routes/auth.js";
 import itemsRouter from "./src/routes/items.js";
+import stationsRouter from "./src/routes/stations.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/items", itemsRouter);
+app.use("/stations", stationsRouter);
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
