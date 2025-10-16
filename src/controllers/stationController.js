@@ -29,6 +29,7 @@ export const getStation = async (req, res) => {
 
 // create updateStation
 export const updateStation = async (req, res) => {
+  console.log("Ruta alcanzada: updateStation");
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -66,4 +67,17 @@ export const updateStation = async (req, res) => {
     return res.status(500).json({ error: "Error updating station" });
   }
 };
+
 // create deleteStation
+export const deleteStation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(`DELETE FROM stations WHERE id = $1`, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Station not found" });
+    }
+    return res.json({ message: "Station deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
