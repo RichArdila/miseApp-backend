@@ -26,18 +26,61 @@ const createTables = async () => {
       `);
     console.log('table "items" created sucessfully');
 
+    // Stations table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS stations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) UNIQUE NOT NULL,
+        description TEXT
+      );
+    `);
+    console.log('Table "stations" created successfully');
+
+    //initialize stations
+    await pool.query(`
+      INSERT INTO stations (name, description) VALUES
+      ('ASS1', 'Assembly Station 1'),
+      ('ASS2', 'Assembly Station 2'),
+      ('GRILL', 'Grill Station'),
+      ('FRYERS', 'Fryer Station'),
+      ('SALADE', 'Salade Station'),
+      ('SANDWICH', 'Sandwich Station'),
+      ('PIZZA', 'Pizza Station')
+      ON CONFLICT (name) DO NOTHING;
+    `);
+    console.log("Stations initialized successfully");
+
+    // Station items table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS stations_items (
         id SERIAL PRIMARY KEY,
-        station VARCHAR(50) NOT NULL,
-        subcategory VARCHAR(20) NOT NULL, -- Ej: Food or Tools
+        station_id INT REFERENCES stations(id) ON DELETE CASCADE,
         location VARCHAR(50) NOT NULL,
         item_id INT REFERENCES items(id) ON DELETE CASCADE,
         quantity INT DEFAULT 0,
-        UNIQUE (station, subcategory, location, item_id) -- Ensure each combination is unique
+        UNIQUE (station_id, location, item_id) -- Ensure each combination is unique
         )
       `);
     console.log('table "stations_items" created sucessfully');
+
+    // Location table
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS locations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) UNIQUE NOT NULL,
+        description TEXT
+        );
+        `);
+    console.log('table "locations" created sucessfully');
+
+    await pool.query(`
+        INSERT INTO locations (name, description) VALUES
+        ('FRIDGE 1', 'Fridge 1'),
+        ('FRIDGE 2', 'Fridge 2'),
+        ('FRIDGE 3', 'Fridge 3')
+        ON CONFLICT (name) DO NOTHING;
+      `);
+    console.log("locations initialized successfully");
 
     // Checklist table
     await pool.query(`

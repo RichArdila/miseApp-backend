@@ -1,0 +1,17 @@
+import express from "express";
+import {
+  createStation,
+  deleteStation,
+  getStation,
+  updateStation,
+} from "../controllers/stationController.js";
+import { authMiddelware, authorizeRole } from "../middlewares/auth.js";
+
+const router = express.Router();
+
+router.post("/", authMiddelware, authorizeRole("admin"), createStation);
+router.get("/", authMiddelware, getStation);
+router.patch("/:id", authMiddelware, authorizeRole("admin"), updateStation);
+router.delete("/:id", authMiddelware, authorizeRole("admin"), deleteStation);
+
+export default router;
