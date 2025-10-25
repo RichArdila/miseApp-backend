@@ -63,6 +63,25 @@ const createTables = async () => {
       `);
     console.log('table "stations_items" created sucessfully');
 
+    // Location table
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS locations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) UNIQUE NOT NULL,
+        description TEXT
+        );
+        `);
+    console.log('table "locations" created sucessfully');
+
+    await pool.query(`
+        INSERT INTO locations (name, description) VALUES
+        ('FRIDGE 1', 'Fridge 1'),
+        ('FRIDGE 2', 'Fridge 2'),
+        ('FRIDGE 3', 'Fridge 3')
+        ON CONFLICT (name) DO NOTHING;
+      `);
+    console.log("locations initialized successfully");
+
     // Checklist table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS checklists (

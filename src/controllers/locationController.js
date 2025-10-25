@@ -1,26 +1,28 @@
 import pool from "../models/db.js";
 
-export const createStation = async (req, res) => {
+export const createLocation = async (req, res) => {
   const { name, description } = req.body;
   try {
     const { rows } = await pool.query(
-      `INSERT INTO stations (name, description)
+      `INSERT INTO locations (name, description)
          VALUES ($1, $2)
          ON CONFLICT (name) DO NOTHING
          RETURNING *`,
       [name, description]
     );
     if (rows.length === 0)
-      return res.status(409).json({ message: "The station already exists" });
+      return res.status(409).json({ message: "The location already exists" });
     res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-export const getStation = async (req, res) => {
+export const getLocations = async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM stations ORDER BY id ASC");
+    const { rows } = await pool.query(
+      "SELECT * FROM locations ORDER BY id ASC"
+    );
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -28,7 +30,7 @@ export const getStation = async (req, res) => {
 };
 
 // create updateStation
-export const updateStation = async (req, res) => {
+export const updateLocation = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -52,30 +54,32 @@ export const updateStation = async (req, res) => {
 
     values.push(id);
 
-    const query = `UPDATE stations SET ${updateFields.join(", ")} WHERE id = $${
-      values.length
-    }
+    const query = `UPDATE locations SET ${updateFields.join(
+      ", "
+    )} WHERE id = $${values.length}
     RETURNING id, name, description`;
 
     const result = await pool.query(query, values);
     if (result.rowCount === 0) {
-      return res.status(400).json({ error: "Station not found" });
+      return res.status(400).json({ error: "Location not found" });
     }
     return res.json(result.rows[0]);
   } catch (error) {
-    return res.status(500).json({ error: "Error updating station" });
+    return res.status(500).json({ error: "Error updating location" });
   }
 };
 
 // create deleteStation
-export const deleteStation = async (req, res) => {
+export const deleteLocation = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query(`DELETE FROM stations WHERE id = $1`, [id]);
+    const result = await pool.query(`DELETE FROM locations WHERE id = $1`, [
+      id,
+    ]);
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Station not found" });
+      return res.status(404).json({ error: "Location not found" });
     }
-    return res.json({ message: "Station deleted successfully" });
+    return res.json({ message: "Location deleted successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
