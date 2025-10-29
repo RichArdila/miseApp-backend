@@ -9,7 +9,7 @@ Create items:
 3. Create the endpoints in items.js. check how to include authorization for create items, only admin create items. **ok**
 4. Test functions for each items created. **ok**
 
-Create Stations:
+Create Stations: **ok**
 
 1. Create Files:
    a. controllers/stationItemsController.js
@@ -21,3 +21,24 @@ Create Stations:
    d. Delete item assigned in a station and test
 
    \*\* Valide Test in postman and jest.
+
+create locations **ok**
+
+Next Step:
+
+Create StationItemsController: This include the configuration of each items in each stations:
+e.g.
+_Station_: Fryer
+_Items list_:
+
+- Chicken Wings
+- Fish
+- Chicken tenders
+
+_Station_: Sandwich
+_Item List_:
+
+- Bread
+- Tomatoes
+- Romaine
+- Iceberg
