@@ -33,3 +33,44 @@ export const getStationItem = async (req, res) => {
     res.status(500).json({ message: "Error getting items from the station" });
   }
 };
+
+export const updateStationItem = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE stations_items
+      SET quantity = $1
+      WHERE id = $2
+      RETURNING *`,
+      [quantity, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    return res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error to update relation station-item:", error);
+    res.status(500).json({ message: "Error to update relation station-item" });
+  }
+};
+
+export const deleteStationItem = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `DELETE FROM stations_items WHERE id = $1 RETURNING *`,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.json({ message: "Deleted station-items sucessfully" });
+  } catch (error) {
+    console.error("Error deleting station-items: ", error);
+    res.status(500).json({ message: "Error deleting station-items" });
+  }
+};
