@@ -1,4 +1,6 @@
-Create items:
+Step 1:
+
+Create items: (**Completed**)
 
 1. Create empty files and named controllers/itemsControllers and route/items.js **ok**
 2. Create the functions for the CRUD of items en itemsControllers.
@@ -24,7 +26,7 @@ Create Stations: **ok**
 
 create locations **ok**
 
-Next Step:
+Step 2: (**Completed**)
 
 Create StationItemsController: This include the configuration of each items in each stations:
 e.g.
@@ -42,3 +44,25 @@ _Item List_:
 - Tomatoes
 - Romaine
 - Iceberg
+
+Step 3: (**in process**)
+
+Checklists diarios:
+
+1.  checklists
+    Create a static list with all items incluided in the stations selected.
+2.  checklist_items
+    Create a status verified or pending for each item, this step avoid t change the status for items and finish checklist.
+
+    **Add only one checklist active for station. Actually the checklist for stations is unlimited(error).**
+    Revisar que los checklist a verificar para el frontend pueda traer toda la informacion del item, de la base.
+
+step 4:
+
+Desplegar el backend en Render o Railway
+
+Desplegar el frontend Next.js en Vercel
+
+Configurar las variables de entorno en Vercel (API_URL, etc.)
+
+Permitir CORS entre ambos

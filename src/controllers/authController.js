@@ -27,8 +27,8 @@ export const login = async (req, res) => {
         username: user.username,
         role: user.role,
       },
-      SECRET_KEY,
-      { expiresIn: "1h" }
+      SECRET_KEY
+      // { expiresIn: "1h" }
     );
     res.json({ token });
   } catch (error) {

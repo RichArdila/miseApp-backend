@@ -7,6 +7,7 @@ import itemsRouter from "./src/routes/items.js";
 import stationsRouter from "./src/routes/stations.js";
 import locationsRouter from "./src/routes/locations.js";
 import stationItemsRouter from "./src/routes/stationsItems.js";
+import checklistRouter from "./src/routes/checklist.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use("/items", itemsRouter);
 app.use("/stations", stationsRouter);
 app.use("/locations", locationsRouter);
 app.use("/stationItems", stationItemsRouter);
+app.use("/checklist", checklistRouter);
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
