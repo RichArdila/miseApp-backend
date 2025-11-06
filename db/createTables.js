@@ -43,25 +43,12 @@ const createTables = async () => {
       ('ASS2', 'Assembly Station 2'),
       ('GRILL', 'Grill Station'),
       ('FRYERS', 'Fryer Station'),
-      ('SALADE', 'Salade Station'),
+      ('SALAD', 'Salade Station'),
       ('SANDWICH', 'Sandwich Station'),
       ('PIZZA', 'Pizza Station')
       ON CONFLICT (name) DO NOTHING;
     `);
     console.log("Stations initialized successfully");
-
-    // Station items table
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS stations_items (
-        id SERIAL PRIMARY KEY,
-        station_id INT REFERENCES stations(id) ON DELETE CASCADE,
-        location VARCHAR(50) NOT NULL,
-        item_id INT REFERENCES items(id) ON DELETE CASCADE,
-        quantity INT DEFAULT 0,
-        UNIQUE (station_id, location, item_id) -- Ensure each combination is unique
-        )
-      `);
-    console.log('table "stations_items" created sucessfully');
 
     // Location table
     await pool.query(`
@@ -82,13 +69,26 @@ const createTables = async () => {
       `);
     console.log("locations initialized successfully");
 
+    // Station items table
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS stations_items (
+        id SERIAL PRIMARY KEY,
+        station_id INT REFERENCES stations(id) ON DELETE CASCADE,
+        location_id INT REFERENCES locations(id) ON DELETE CASCADE,
+        item_id INT REFERENCES items(id) ON DELETE CASCADE,
+        quantity INT DEFAULT 0,
+        UNIQUE (station_id, location_id, item_id) -- Ensure each combination is unique
+        )
+      `);
+    console.log('table "stations_items" created sucessfully');
+
     // Checklist table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS checklists (
         id SERIAL PRIMARY KEY,
-        station VARCHAR(50) NOT NULL,
+        station_id INT REFERENCES stations(id) ON DELETE CASCADE,
         user_id INT REFERENCES users(id) ON DELETE SET NULL,
-        status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('activo', 'finished')),
+        status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'finished')),
         started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         finished_at TIMESTAMP,
         finished_by INT REFERENCES users(id) ON DELETE SET NULL
@@ -100,7 +100,7 @@ const createTables = async () => {
         CREATE TABLE IF NOT EXISTS checklist_items (
         id SERIAL PRIMARY KEY,
         checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
-        station_item_id INT REFERENCES station_items(id) ON DELETE CASCADE,
+        station_item_id INT REFERENCES stations_items(id) ON DELETE CASCADE,
         status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'verified')),
         verified_at TIMESTAMP,
         verified_by INT REFERENCES users(id) ON DELETE SET NULL
@@ -108,23 +108,23 @@ const createTables = async () => {
       `);
     console.log('table "checklist_items" created sucessfully');
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS checklist_history (
-      id SERIAL PRIMARY KEY,
-      checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
-      finished_at TIMESTAMP,
-      finished_by INT REFERENCES users(id)
-      `);
-    console.log('table "created_history" created sucessfully');
+    // await pool.query(`
+    //   CREATE TABLE IF NOT EXISTS checklist_history (
+    //   id SERIAL PRIMARY KEY,
+    //   checklist_id INT REFERENCES checklists(id) ON DELETE CASCADE,
+    //   finished_at TIMESTAMP,
+    //   finished_by INT REFERENCES users(id)
+    //   `);
+    // console.log('table "checklist_history" created sucessfully');
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS checklist_items_history (
-      id SERIAL PRIMARY KEY,
-      history_id INT REFERENCES checklist_history(id) ON DELETE CASCADE,
-      item_name VARCHAR(150),
-      status VARCHAR(20)
-      `);
-    console.log('table "checklist_items_history" created sucessfully');
+    // await pool.query(`
+    //   CREATE TABLE IF NOT EXISTS checklist_items_history (
+    //   id SERIAL PRIMARY KEY,
+    //   history_id INT REFERENCES checklist_history(id) ON DELETE CASCADE,
+    //   item_name VARCHAR(150),
+    //   status VARCHAR(20)
+    //   `);
+    // console.log('table "checklist_items_history" created sucessfully');
   } catch (error) {
     console.error('Error: Error creating table "users"', error.message);
   } finally {
