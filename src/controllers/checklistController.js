@@ -5,7 +5,17 @@ export const createChecklist = async (req, res) => {
   const { station_id } = req.body;
 
   try {
-    //1. create main checklist
+    // Check if there is an active checklist for this station
+    const activeChecklist = await pool.query(
+      `SELECT * FROM checklists WHERE station_id = $1 AND status = 'active'`,
+      [station_id]
+    );
+    if (activeChecklist.rows.length > 0)
+      return res
+        .status(400)
+        .json({ message: "There is an active checklist for this station" });
+
+    // reate main checklist
     const checklistRes = await pool.query(
       `INSERT INTO checklists (station_id, user_id)
             VALUES ($1, $2)
@@ -15,13 +25,13 @@ export const createChecklist = async (req, res) => {
 
     const checklist = checklistRes.rows[0];
 
-    //2. Get items for this station
+    // Get items for this station
     const { rows: stationItems } = await pool.query(
       `SELECT id FROM stations_items WHERE station_id = $1`,
       [station_id]
     );
 
-    //3. Insert each items in checklist_items with status 'pending'
+    // Insert each items in checklist_items with status 'pending'
     for (const item of stationItems) {
       await pool.query(
         `INSERT INTO checklist_items (checklist_id, station_item_id)
@@ -46,12 +56,30 @@ export const createChecklist = async (req, res) => {
 export const getActiveChecklists = async (req, res) => {
   try {
     const { rows } = await pool.query(`
-            SELECT c.*, s.name AS station_name, u.username
+            SELECT c.*, s.name AS station_name, 
+            u.username AS created_by
             FROM checklists c
             JOIN stations s ON c.station_id = s.id
             LEFT JOIN users u ON c.user_id = u.id
             WHERE C.status = 'active'
-            ORDER BY c.started_at DESC
+            `);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error getting checklists: ", error);
+    res.status(500).json({ message: "Error getting checklists" });
+  }
+};
+
+export const getAllChecklists = async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+            SELECT c.*, s.name AS station_name, 
+            u.username AS Created_by,
+            u2.username AS finished_by
+            FROM checklists c
+            JOIN stations s ON c.station_id = s.id
+            LEFT JOIN users u ON c.user_id = u.id
+            LEFT JOIN users u2 ON c.finished_by = u2.id
             `);
     res.json(rows);
   } catch (error) {

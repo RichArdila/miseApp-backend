@@ -19,7 +19,7 @@ export const getStationItem = async (req, res) => {
   const { station_id } = req.params;
   try {
     const result = await pool.query(
-      `SELECT si.id, s.name AS station, i.name AS item, l.name AS location, i.type, si.quantity
+      `SELECT si.id, s.name AS station, i.name AS item, l.name AS location, i.type, i.image_URL, si.quantity
             FROM stations_items si
             JOIN stations s ON si.station_id = s.id
             JOIN items i ON si.item_id = i.id
@@ -28,6 +28,22 @@ export const getStationItem = async (req, res) => {
       [station_id]
     );
     res.json(result.rows);
+  } catch (error) {
+    console.error("Error getting items from the station:", error);
+    res.status(500).json({ message: "Error getting items from the station" });
+  }
+};
+
+export const getAllStationItem = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT si.id, s.name AS station, i.name AS item, l.name AS location, i.type, i.image_URL, si.quantity
+            FROM stations_items si
+            JOIN stations s ON si.station_id = s.id
+            JOIN items i ON si.item_id = i.id
+            JOIN locations l ON si.location_id = l.id`
+    );
+    res.json(rows);
   } catch (error) {
     console.error("Error getting items from the station:", error);
     res.status(500).json({ message: "Error getting items from the station" });
