@@ -45,7 +45,7 @@ _Item List_:
 - Romaine
 - Iceberg
 
-Step 3: (**in process**)
+Step 3: (**Completed**)
 
 Checklists diarios:
 
@@ -57,7 +57,13 @@ Checklists diarios:
     **Add only one checklist active for station. Actually the checklist for stations is unlimited(error).**
     Revisar que los checklist a verificar para el frontend pueda traer toda la informacion del item, de la base.
 
-step 4:
+step 4: (**IN Process**)
+
+1. Verified the history checklist
+
+2. create documentation on how the application works.
+
+step 5:
 
 Desplegar el backend en Render o Railway
 
